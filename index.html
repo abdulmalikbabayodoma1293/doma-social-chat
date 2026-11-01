@@ -1,355 +1,286 @@
-    HTML
+HTML
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DOMA SOCIAL</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#e9edef;color:#222}
-header{background:#075e54;color:white;padding:18px;font-size:23px;font-weight:bold}
-.page{padding:15px;max-width:600px;margin:auto}
-.card{background:white;padding:15px;border-radius:12px;margin:10px 0}
-input,textarea,button{width:100%;padding:13px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{background:#075e54;color:white;border:0}
-.secondary{background:#667781}
-.hidden{display:none!important}
-nav{display:grid;grid-template-columns:repeat(4,1fr);background:white}
-nav button{border-radius:0;margin:0;font-size:13px;padding:14px 2px}
-.chat-item{background:white;padding:14px;margin:7px 0;border-radius:10px;display:flex;gap:12px;align-items:center}
-.avatar{width:42px;height:42px;border-radius:50%;background:#128c7e;color:white;display:flex;align-items:center;justify-content:center}
-#messages{background:#efeae2;padding:10px;min-height:200px;max-height:350px;overflow:auto;border-radius:10px}
-.message{background:#d9fdd3;padding:10px;margin:8px 0 8px auto;border-radius:10px;width:fit-content;max-width:85%;overflow-wrap:anywhere}
-.media{max-width:100%;border-radius:10px;margin-top:8px}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+}
+header {
+  background: #075e54;
+  color: white;
+  padding: 18px;
+  font-size: 25px;
+  font-weight: bold;
+}
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 15px;
+}
+.card {
+  background: white;
+  padding: 18px;
+  margin: 12px 0;
+  border-radius: 12px;
+}
+input, button {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 16px;
+}
+button {
+  background: #075e54;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+button:active {
+  opacity: .8;
+}
+.status {
+  display: inline-block;
+  background: #e6f5ee;
+  padding: 12px;
+  margin: 5px;
+  border-radius: 12px;
+}
+.status img, .post img, .post video {
+  max-width: 100%;
+  border-radius: 10px;
+}
+.post {
+  background: white;
+  padding: 15px;
+  margin: 12px 0;
+  border-radius: 12px;
+}
+.hidden {
+  display: none;
+}
 </style>
 </head>
+
 <body>
 
-<header>DOMA SOCIAL</header>
+<header>DOMA SOCIAL 🌍</header>
 
-<section id="signup" class="page">
-<div class="card">
+<div class="container">
+
+<div id="auth" class="card">
 <h2>Create Account</h2>
-<input id="regName" placeholder="Your name">
-<input id="regEmail" type="email" placeholder="Email address">
-<input id="regPass" type="password" placeholder="Create password">
-<button onclick="register()">Sign Up</button>
-<p>Already have an account?</p>
-<button class="secondary" onclick="showLogin()">Sign In</button>
-</div>
-</section>
-
-<section id="login" class="page hidden">
-<div class="card">
-<h2>Welcome Back</h2>
-<input id="logEmail" type="email" placeholder="Email address">
-<input id="logPass" type="password" placeholder="Password">
+<input id="name" placeholder="Your Full Name">
+<input id="email" type="email" placeholder="Email Address">
+<input id="password" type="password" placeholder="Create Password">
+<button onclick="signup()">Sign Up</button>
+<hr>
+<h3>Already have an account?</h3>
+<input id="loginEmail" placeholder="Email Address">
+<input id="loginPassword" type="password" placeholder="Password">
 <button onclick="login()">Sign In</button>
-<button class="secondary" onclick="showSignup()">Create Account</button>
-</div>
-</section>
-
-<section id="app" class="hidden">
-<nav>
-<button onclick="page('chats')">Chats</button>
-<button onclick="page('status')">Status</button>
-<button onclick="page('groups')">Groups</button>
-<button onclick="page('profile')">Profile</button>
-</nav>
-
-<div id="chats" class="page">
-<h2>Chats</h2>
-<input id="search" placeholder="Search chats" oninput="searchChats()">
-<div id="chatList"></div>
+<p id="message"></p>
 </div>
 
-<div id="chatWindow" class="page hidden">
-<button class="secondary" onclick="page('chats')">← Back</button>
-<h2 id="chatTitle">Chat</h2>
-<div id="messages"></div>
-<input id="chatInput" placeholder="Type a message">
-<button onclick="sendMessage()">Send</button>
-</div>
+<div id="home" class="hidden">
 
-<div id="status" class="page hidden">
-<h2>Status</h2>
 <div class="card">
-<textarea id="statusText" placeholder="What's on your mind?"></textarea>
-<input id="statusFile" type="file" accept="image/*,video/*">
+<h2>Welcome to DOMA SOCIAL</h2>
+<p id="welcome"></p>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="card">
+<h3>📸 Create Status</h3>
+<input type="file" id="statusFile" accept="image/*,video/*">
 <button onclick="addStatus()">Post Status</button>
-</div>
-<div id="statusList"></div>
-</div>
-
-<div id="groups" class="page hidden">
-<h2>Groups</h2>
-<div class="card">
-<input id="groupName" placeholder="Enter group name">
-<button onclick="createGroup()">Create Group</button>
-</div>
-<div id="groupList"></div>
+<div id="statuses"></div>
 </div>
 
-<div id="profile" class="page hidden">
-<h2>My Profile</h2>
 <div class="card">
-<h3 id="myName"></h3>
-<p id="myEmail"></p>
-<img id="myPhoto" class="media hidden">
-<input id="editName" placeholder="Change name">
-<textarea id="bio" placeholder="About me"></textarea>
-<input id="photoFile" type="file" accept="image/*">
-<button onclick="saveProfile()">Save Profile</button>
-<button class="secondary" onclick="logout()">Log Out</button>
+<h3>📝 Create Post</h3>
+<input id="postText" placeholder="What's on your mind?">
+<input type="file" id="postFile" accept="image/*,video/*">
+<button onclick="addPost()">Share Post</button>
+</div>
+
+<h3>News Feed</h3>
+<div id="feed"></div>
+
 </div>
 </div>
-</section>
 
 <script>
-let activeChat="";
-let mediaStatuses=[];
+let users = JSON.parse(localStorage.getItem("domaUsers")) || [];
+let currentUser = localStorage.getItem("domaCurrentUser");
 
-function data(key, fallback){
- try{return JSON.parse(localStorage.getItem(key)) || fallback}
- catch(e){return fallback}
+function saveUsers() {
+  localStorage.setItem("domaUsers", JSON.stringify(users));
 }
 
-function hideAll(){
- ["signup","login","app"].forEach(id=>
- document.getElementById(id).classList.add("hidden"));
-}
+function signup() {
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim().toLowerCase();
+  let password = document.getElementById("password").value;
 
-function showSignup(){
- hideAll();
- document.getElementById("signup").classList.remove("hidden");
-}
-
-function showLogin(){
- hideAll();
- document.getElementById("login").classList.remove("hidden");
-}
-
-function register(){
- let name=document.getElementById("regName").value.trim();
- let email=document.getElementById("regEmail").value.trim();
- let pass=document.getElementById("regPass").value;
-
- if(!name || !email || !pass){
-  alert("Please fill all fields");
-  return;
- }
-
- localStorage.setItem("domaAccount",JSON.stringify({name,email,pass}));
- alert("Account created! Now sign in.");
- showLogin();
-}
-
-function login(){
- let account=data("domaAccount",null);
- let email=document.getElementById("logEmail").value.trim();
- let pass=document.getElementById("logPass").value;
-
- if(!account || account.email!==email || account.pass!==pass){
-  alert("Wrong email or password. Check your details.");
-  return;
- }
-
- localStorage.setItem("domaLoggedIn","yes");
- openApp();
-}
-
-function openApp(){
- let account=data("domaAccount",{});
- hideAll();
- document.getElementById("app").classList.remove("hidden");
- document.getElementById("myName").textContent=localStorage.getItem("profileName") || account.name || "User";
- document.getElementById("myEmail").textContent=account.email || "";
- document.getElementById("editName").value=localStorage.getItem("profileName") || account.name || "";
- document.getElementById("bio").value=localStorage.getItem("profileBio") || "";
- let photo=localStorage.getItem("profilePhoto");
- if(photo){
-  document.getElementById("myPhoto").src=photo;
-  document.getElementById("myPhoto").classList.remove("hidden");
- }
- renderChats();
- renderGroups();
- renderStatuses();
- page("chats");
-}
-
-function page(id){
- ["chats","status","groups","profile","chatWindow"].forEach(x=>
- document.getElementById(x).classList.add("hidden"));
- document.getElementById(id).classList.remove("hidden");
-}
-
-function renderChats(){
- let list=document.getElementById("chatList");
- list.innerHTML="";
- ["Aboki 1","Aboki 2","Aboki 3"].forEach(name=>{
-  let item=document.createElement("div");
-  item.className="chat-item";
-  let avatar=document.createElement("div");
-  avatar.className="avatar";
-  avatar.textContent=name[0];
-  let label=document.createElement("b");
-  label.textContent=name;
-  item.append(avatar,label);
-  item.onclick=()=>openChat(name);
-  list.appendChild(item);
- });
-}
-
-function searchChats(){
- let q=document.getElementById("search").value.toLowerCase();
- document.querySelectorAll(".chat-item").forEach(item=>{
-  item.style.display=item.textContent.toLowerCase().includes(q)?"flex":"none";
- });
-}
-
-function openChat(name){
- activeChat=name;
- document.getElementById("chatTitle").textContent=name;
- page("chatWindow");
- renderMessages();
-}
-
-function renderMessages(){
- let box=document.getElementById("messages");
- box.innerHTML="";
- let all=data("domaChats",{});
- (all[activeChat] || []).forEach(message=>{
-  let div=document.createElement("div");
-  div.className="message";
-  div.textContent=message;
-  box.appendChild(div);
- });
- box.scrollTop=box.scrollHeight;
-}
-
-function sendMessage(){
- let input=document.getElementById("chatInput");
- let message=input.value.trim();
- if(!message)return;
-
- let all=data("domaChats",{});
- if(!all[activeChat])all[activeChat]=[];
- all[activeChat].push(message);
- localStorage.setItem("domaChats",JSON.stringify(all));
- input.value="";
- renderMessages();
-}
-
-function addStatus(){
- let text=document.getElementById("statusText").value.trim();
- let file=document.getElementById("statusFile").files[0];
-
- if(!text && !file){
-  alert("Write a status or choose a photo/video");
-  return;
- }
-
- let item={text:text,media:"",type:""};
- if(file){
-  item.media=URL.createObjectURL(file);
-  item.type=file.type;
- }
- mediaStatuses.unshift(item);
- document.getElementById("statusText").value="";
- document.getElementById("statusFile").value="";
- renderStatuses();
- alert("Status posted!");
-}
-
-function renderStatuses(){
- let list=document.getElementById("statusList");
- list.innerHTML="";
- mediaStatuses.forEach(item=>{
-  let card=document.createElement("div");
-  card.className="card";
-  let p=document.createElement("p");
-  p.textContent=item.text;
-  card.appendChild(p);
-
-  if(item.media){
-   let media;
-   if(item.type.startsWith("video/")){
-    media=document.createElement("video");
-    media.controls=true;
-   }else{
-    media=document.createElement("img");
-   }
-   media.src=item.media;
-   media.className="media";
-   card.appendChild(media);
+  if (!name || !email || !password) {
+    message.textContent = "Fill all fields!";
+    return;
   }
-  list.appendChild(card);
- });
+
+  if (users.some(u => u.email === email)) {
+    message.textContent = "Email already registered!";
+    return;
+  }
+
+  users.push({name, email, password});
+  saveUsers();
+  currentUser = email;
+  localStorage.setItem("domaCurrentUser", email);
+  showHome();
 }
 
-function createGroup(){
- let name=document.getElementById("groupName").value.trim();
- if(!name){
-  alert("Enter a group name");
-  return;
- }
- let groups=data("domaGroups",[]);
- groups.push(name);
- localStorage.setItem("domaGroups",JSON.stringify(groups));
- document.getElementById("groupName").value="";
- renderGroups();
+function login() {
+  let email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  let password = document.getElementById("loginPassword").value;
+
+  let user = users.find(u => u.email === email && u.password === password);
+
+  if (!user) {
+    message.textContent = "Incorrect email or password!";
+    return;
+  }
+
+  currentUser = email;
+  localStorage.setItem("domaCurrentUser", email);
+  showHome();
 }
 
-function renderGroups(){
- let list=document.getElementById("groupList");
- list.innerHTML="";
- data("domaGroups",[]).forEach(name=>{
-  let card=document.createElement("div");
-  card.className="card";
-  card.textContent="👥 "+name;
-  list.appendChild(card);
- });
+function showHome() {
+  let user = users.find(u => u.email === currentUser);
+  if (!user) return;
+
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("welcome").textContent = "Welcome, " + user.name;
+
+  showPosts();
+  showStatuses();
 }
 
-function saveProfile(){
- let name=document.getElementById("editName").value.trim();
- let bio=document.getElementById("bio").value;
- let file=document.getElementById("photoFile").files[0];
+function logout() {
+  localStorage.removeItem("domaCurrentUser");
+  location.reload();
+}
 
- if(name){
-  localStorage.setItem("profileName",name);
-  document.getElementById("myName").textContent=name;
- }
+function addStatus() {
+  let file = document.getElementById("statusFile").files[0];
+  if (!file) {
+    alert("Choose a photo or video first!");
+    return;
+  }
 
- localStorage.setItem("profileBio",bio);
+  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+    alert("Choose an image or video!");
+    return;
+  }
 
- if(file){
-  let reader=new FileReader();
-  reader.onload=function(){
-   localStorage.setItem("profilePhoto",reader.result);
-   let img=document.getElementById("myPhoto");
-   img.src=reader.result;
-   img.classList.remove("hidden");
-   alert("Profile saved!");
+  let reader = new FileReader();
+  reader.onload = function() {
+    let statuses = JSON.parse(localStorage.getItem("domaStatuses")) || [];
+    statuses.unshift({
+      user: currentUser,
+      file: reader.result,
+      type: file.type
+    });
+    localStorage.setItem("domaStatuses", JSON.stringify(statuses));
+    document.getElementById("statusFile").value = "";
+    showStatuses();
   };
   reader.readAsDataURL(file);
- }else{
-  alert("Profile saved!");
- }
 }
 
-function logout(){
- localStorage.removeItem("domaLoggedIn");
- showLogin();
+function showStatuses() {
+  let statuses = JSON.parse(localStorage.getItem("domaStatuses")) || [];
+  document.getElementById("statuses").innerHTML = statuses.map(s =>
+    `<div class="status">
+      <b>${escapeHTML(s.user)}</b><br>
+      ${s.type.startsWith("video/")
+        ? `<video src="${s.file}" controls width="180"></video>`
+        : `<img src="${s.file}" width="180">`}
+    </div>`
+  ).join("");
 }
 
-if(localStorage.getItem("domaLoggedIn")==="yes" && data("domaAccount",null)){
- openApp();
+function addPost() {
+  let text = document.getElementById("postText").value.trim();
+  let file = document.getElementById("postFile").files[0];
+
+  if (!text && !file) {
+    alert("Write something or choose a photo!");
+    return;
+  }
+
+  function savePost(image) {
+    let posts = JSON.parse(localStorage.getItem("domaPosts")) || [];
+    posts.unshift({
+      user: currentUser,
+      text: text,
+      image: image
+    });
+    localStorage.setItem("domaPosts", JSON.stringify(posts));
+    document.getElementById("postText").value = "";
+    document.getElementById("postFile").value = "";
+    showPosts();
+  }
+
+  if (file) {
+    if (!file.type.startsWith("image/")) {
+      alert("For now, choose an image for your post.");
+      return;
+    }
+    let reader = new FileReader();
+    reader.onload = () => savePost(reader.result);
+    reader.readAsDataURL(file);
+  } else {
+    savePost("");
+  }
+}
+
+function showPosts() {
+  let posts = JSON.parse(localStorage.getItem("domaPosts")) || [];
+  document.getElementById("feed").innerHTML = posts.map(p =>
+    `<div class="post">
+      <b>${escapeHTML(p.user)}</b>
+      <p>${escapeHTML(p.text)}</p>
+      ${p.image ? `<img src="${p.image}">` : ""}
+    </div>`
+  ).join("");
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+if (currentUser && users.some(u => u.email === currentUser)) {
+  showHome();
 }
 </script>
 
 </body>
 </html>
-

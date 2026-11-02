@@ -8,69 +8,86 @@ HTML
 <title>DOMA SOCIAL</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing:border-box; }
+
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f2f5;
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f0f2f5;
 }
+
 header {
-  background: #075e54;
-  color: white;
-  padding: 18px;
-  font-size: 25px;
-  font-weight: bold;
+ background:#075e54;
+ color:white;
+ padding:18px;
+ font-size:25px;
+ font-weight:bold;
 }
+
 .container {
-  max-width: 500px;
-  margin: auto;
-  padding: 15px;
+ max-width:500px;
+ margin:auto;
+ padding:15px;
 }
-.card {
-  background: white;
-  padding: 18px;
-  margin: 12px 0;
-  border-radius: 12px;
+
+.card,.post {
+ background:white;
+ padding:18px;
+ margin:12px 0;
+ border-radius:12px;
 }
-input, button {
-  width: 100%;
-  padding: 13px;
-  margin: 7px 0;
-  border: 1px solid #ddd;
-  border-radius: 7px;
-  font-size: 16px;
+
+input,button {
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ border:1px solid #ddd;
+ border-radius:7px;
+ font-size:16px;
 }
+
 button {
-  background: #075e54;
-  color: white;
-  border: none;
-  font-weight: bold;
+ background:#075e54;
+ color:white;
+ border:none;
+ font-weight:bold;
 }
-button:active {
-  opacity: .8;
+
+button:disabled {
+ opacity:.6;
 }
+
+.hidden { display:none; }
+
 .status {
-  display: inline-block;
-  background: #e6f5ee;
-  padding: 12px;
-  margin: 5px;
-  border-radius: 12px;
+ display:inline-block;
+ background:#e6f5ee;
+ padding:10px;
+ margin:5px;
+ border-radius:12px;
+ max-width:90%;
 }
-.status img, .post img, .post video {
-  max-width: 100%;
-  border-radius: 10px;
+
+.status img,.post img {
+ max-width:100%;
+ border-radius:10px;
 }
-.post {
-  background: white;
-  padding: 15px;
-  margin: 12px 0;
-  border-radius: 12px;
+
+.status video,.post video {
+ width:100%;
+ max-height:350px;
+ border-radius:10px;
 }
-.hidden {
-  display: none;
+
+.small {
+ font-size:12px;
+ color:#777;
 }
+
+#message {
+ color:#d32f2f;
+}
+
 </style>
 </head>
 
@@ -80,209 +97,478 @@ button:active {
 
 <div class="container">
 
+<!-- ACCOUNT -->
+
 <div id="auth" class="card">
+
 <h2>Create Account</h2>
+
 <input id="name" placeholder="Your Full Name">
-<input id="email" type="email" placeholder="Email Address">
-<input id="password" type="password" placeholder="Create Password">
-<button onclick="signup()">Sign Up</button>
+
+<input id="email" type="email"
+placeholder="Email Address">
+
+<input id="password" type="password"
+placeholder="Create Password">
+
+<button id="signupBtn" onclick="signup()">
+Sign Up
+</button>
+
 <hr>
+
 <h3>Already have an account?</h3>
-<input id="loginEmail" placeholder="Email Address">
-<input id="loginPassword" type="password" placeholder="Password">
-<button onclick="login()">Sign In</button>
+
+<input id="loginEmail" type="email"
+placeholder="Email Address">
+
+<input id="loginPassword" type="password"
+placeholder="Password">
+
+<button id="loginBtn" onclick="login()">
+Sign In
+</button>
+
 <p id="message"></p>
+
 </div>
+
+<!-- HOME -->
 
 <div id="home" class="hidden">
 
 <div class="card">
-<h2>Welcome to DOMA SOCIAL</h2>
+
+<h2>Welcome to DOMA SOCIAL 🌍</h2>
+
 <p id="welcome"></p>
+
 <button onclick="logout()">Logout</button>
+
 </div>
 
+<!-- STATUS -->
+
 <div class="card">
+
 <h3>📸 Create Status</h3>
-<input type="file" id="statusFile" accept="image/*,video/*">
-<button onclick="addStatus()">Post Status</button>
+
+<input type="file" id="statusFile"
+accept="image/*,video/*">
+
+<button onclick="addStatus()">
+Post Status
+</button>
+
+<h3>Recent Status</h3>
+
 <div id="statuses"></div>
+
 </div>
+
+<!-- POST -->
 
 <div class="card">
+
 <h3>📝 Create Post</h3>
-<input id="postText" placeholder="What's on your mind?">
-<input type="file" id="postFile" accept="image/*,video/*">
-<button onclick="addPost()">Share Post</button>
+
+<input id="postText"
+placeholder="What's on your mind?">
+
+<input type="file" id="postFile"
+accept="image/*,video/*">
+
+<button onclick="addPost()">
+Share Post
+</button>
+
 </div>
 
-<h3>News Feed</h3>
+<h3>🌍 News Feed</h3>
+
 <div id="feed"></div>
 
 </div>
 </div>
 
+<!-- FIREBASE LIBRARIES -->
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+
 <script>
-let users = JSON.parse(localStorage.getItem("domaUsers")) || [];
-let currentUser = localStorage.getItem("domaCurrentUser");
 
-function saveUsers() {
-  localStorage.setItem("domaUsers", JSON.stringify(users));
+// FIREBASE CONFIGURATION
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBTQgTSxPiMAPH1r26-1jVObquBMCu0XFw",
+ authDomain: "doma-social-chat.firebaseapp.com",
+ projectId: "doma-social-chat",
+ storageBucket: "doma-social-chat.firebasestorage.app",
+ messagingSenderId: "202212790229",
+ appId: "1:202212790229:web:2a03ef93369d27f6f1b75c",
+ measurementId: "G-65ZBKT7TZW"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+let currentUser = null;
+let stopPosts = null;
+let stopStatuses = null;
+
+// HELPERS
+
+function el(id) {
+ return document.getElementById(id);
 }
 
-function signup() {
-  let name = document.getElementById("name").value.trim();
-  let email = document.getElementById("email").value.trim().toLowerCase();
-  let password = document.getElementById("password").value;
-
-  if (!name || !email || !password) {
-    message.textContent = "Fill all fields!";
-    return;
-  }
-
-  if (users.some(u => u.email === email)) {
-    message.textContent = "Email already registered!";
-    return;
-  }
-
-  users.push({name, email, password});
-  saveUsers();
-  currentUser = email;
-  localStorage.setItem("domaCurrentUser", email);
-  showHome();
-}
-
-function login() {
-  let email = document.getElementById("loginEmail").value.trim().toLowerCase();
-  let password = document.getElementById("loginPassword").value;
-
-  let user = users.find(u => u.email === email && u.password === password);
-
-  if (!user) {
-    message.textContent = "Incorrect email or password!";
-    return;
-  }
-
-  currentUser = email;
-  localStorage.setItem("domaCurrentUser", email);
-  showHome();
-}
-
-function showHome() {
-  let user = users.find(u => u.email === currentUser);
-  if (!user) return;
-
-  document.getElementById("auth").classList.add("hidden");
-  document.getElementById("home").classList.remove("hidden");
-  document.getElementById("welcome").textContent = "Welcome, " + user.name;
-
-  showPosts();
-  showStatuses();
-}
-
-function logout() {
-  localStorage.removeItem("domaCurrentUser");
-  location.reload();
-}
-
-function addStatus() {
-  let file = document.getElementById("statusFile").files[0];
-  if (!file) {
-    alert("Choose a photo or video first!");
-    return;
-  }
-
-  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-    alert("Choose an image or video!");
-    return;
-  }
-
-  let reader = new FileReader();
-  reader.onload = function() {
-    let statuses = JSON.parse(localStorage.getItem("domaStatuses")) || [];
-    statuses.unshift({
-      user: currentUser,
-      file: reader.result,
-      type: file.type
-    });
-    localStorage.setItem("domaStatuses", JSON.stringify(statuses));
-    document.getElementById("statusFile").value = "";
-    showStatuses();
-  };
-  reader.readAsDataURL(file);
-}
-
-function showStatuses() {
-  let statuses = JSON.parse(localStorage.getItem("domaStatuses")) || [];
-  document.getElementById("statuses").innerHTML = statuses.map(s =>
-    `<div class="status">
-      <b>${escapeHTML(s.user)}</b><br>
-      ${s.type.startsWith("video/")
-        ? `<video src="${s.file}" controls width="180"></video>`
-        : `<img src="${s.file}" width="180">`}
-    </div>`
-  ).join("");
-}
-
-function addPost() {
-  let text = document.getElementById("postText").value.trim();
-  let file = document.getElementById("postFile").files[0];
-
-  if (!text && !file) {
-    alert("Write something or choose a photo!");
-    return;
-  }
-
-  function savePost(image) {
-    let posts = JSON.parse(localStorage.getItem("domaPosts")) || [];
-    posts.unshift({
-      user: currentUser,
-      text: text,
-      image: image
-    });
-    localStorage.setItem("domaPosts", JSON.stringify(posts));
-    document.getElementById("postText").value = "";
-    document.getElementById("postFile").value = "";
-    showPosts();
-  }
-
-  if (file) {
-    if (!file.type.startsWith("image/")) {
-      alert("For now, choose an image for your post.");
-      return;
-    }
-    let reader = new FileReader();
-    reader.onload = () => savePost(reader.result);
-    reader.readAsDataURL(file);
-  } else {
-    savePost("");
-  }
-}
-
-function showPosts() {
-  let posts = JSON.parse(localStorage.getItem("domaPosts")) || [];
-  document.getElementById("feed").innerHTML = posts.map(p =>
-    `<div class="post">
-      <b>${escapeHTML(p.user)}</b>
-      <p>${escapeHTML(p.text)}</p>
-      ${p.image ? `<img src="${p.image}">` : ""}
-    </div>`
-  ).join("");
+function showMessage(text) {
+ el("message").textContent = text;
 }
 
 function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;",
-    '"':"&quot;", "'":"&#39;"
-  })[c]);
+ return String(value || "").replace(/[&<>"']/g,c => ({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ })[c]);
 }
 
-if (currentUser && users.some(u => u.email === currentUser)) {
-  showHome();
+function setLoading(id,loading,text) {
+ const btn = el(id);
+ btn.disabled = loading;
+ btn.textContent = loading ? "Please wait..." : text;
 }
+
+// SIGN UP
+
+async function signup() {
+
+ const name = el("name").value.trim();
+ const email = el("email").value.trim();
+ const password = el("password").value;
+
+ if (!name || !email || !password) {
+  showMessage("Fill all fields!");
+  return;
+ }
+
+ if (password.length < 6) {
+  showMessage("Password must be at least 6 characters.");
+  return;
+ }
+
+ setLoading("signupBtn",true,"Sign Up");
+
+ try {
+
+  const result = await auth.createUserWithEmailAndPassword(
+   email,password
+  );
+
+  await result.user.updateProfile({
+   displayName:name
+  });
+
+  await db.collection("Users").doc(result.user.uid).set({
+   name:name,
+   email:email,
+   uid:result.user.uid,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  el("name").value = "";
+  el("email").value = "";
+  el("password").value = "";
+
+ } catch(error) {
+  showMessage(error.message);
+ }
+
+ setLoading("signupBtn",false,"Sign Up");
+}
+
+// SIGN IN
+
+async function login() {
+
+ const email = el("loginEmail").value.trim();
+ const password = el("loginPassword").value;
+
+ if (!email || !password) {
+  showMessage("Enter email and password!");
+  return;
+ }
+
+ setLoading("loginBtn",true,"Sign In");
+
+ try {
+
+  await auth.signInWithEmailAndPassword(email,password);
+
+ } catch(error) {
+  showMessage(error.message);
+ }
+
+ setLoading("loginBtn",false,"Sign In");
+}
+
+// AUTH STATE
+
+auth.onAuthStateChanged(async user => {
+
+ currentUser = user;
+
+ if (user) {
+
+  el("auth").classList.add("hidden");
+  el("home").classList.remove("hidden");
+
+  el("welcome").textContent =
+   "Welcome, " + (user.displayName || user.email);
+
+  loadPosts();
+  loadStatuses();
+
+ } else {
+
+  el("auth").classList.remove("hidden");
+  el("home").classList.add("hidden");
+
+  stopPosts?.();
+  stopStatuses?.();
+
+  stopPosts = null;
+  stopStatuses = null;
+
+ }
+
+});
+
+// LOGOUT
+
+async function logout() {
+ try {
+  await auth.signOut();
+ } catch(error) {
+  alert(error.message);
+ }
+}
+
+// UPLOAD MEDIA
+
+async function uploadFile(file,folder) {
+
+ if (!file) return null;
+
+ const allowed =
+  file.type.startsWith("image/") ||
+  file.type.startsWith("video/");
+
+ if (!allowed) {
+  throw new Error("Choose an image or video.");
+ }
+
+ if (file.size > 20 * 1024 * 1024) {
+  throw new Error("File must not exceed 20MB.");
+ }
+
+ const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+
+ const path =
+  folder + "/" + currentUser.uid + "/" +
+  Date.now() + "_" + safeName;
+
+ const reference = storage.ref(path);
+
+ await reference.put(file);
+
+ return await reference.getDownloadURL();
+}
+
+// CREATE STATUS
+
+async function addStatus() {
+
+ if (!currentUser) return;
+
+ const file = el("statusFile").files[0];
+
+ if (!file) {
+  alert("Choose a photo or video first!");
+  return;
+ }
+
+ try {
+
+  const url = await uploadFile(file,"statuses");
+
+  await db.collection("Statuses").add({
+
+   uid:currentUser.uid,
+   name:currentUser.displayName || currentUser.email,
+   url:url,
+   type:file.type,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+
+  });
+
+  el("statusFile").value = "";
+
+  alert("Status posted successfully!");
+
+ } catch(error) {
+  alert(error.message);
+ }
+}
+
+// SHOW STATUSES
+
+function loadStatuses() {
+
+ stopStatuses?.();
+
+ stopStatuses = db.collection("Statuses")
+  .orderBy("createdAt","desc")
+  .limit(100)
+  .onSnapshot(snapshot => {
+
+   const now = Date.now();
+
+   el("statuses").innerHTML = "";
+
+   snapshot.forEach(doc => {
+
+    const s = doc.data();
+
+    if (!s.createdAt) return;
+
+    const created = s.createdAt.toMillis();
+
+    // STATUS EXPIRES AFTER 24 HOURS
+
+    if (now - created > 24 * 60 * 60 * 1000) return;
+
+    const media = s.type.startsWith("video/")
+     ? `<video src="${escapeHTML(s.url)}" controls></video>`
+     : `<img src="${escapeHTML(s.url)}">`;
+
+    el("statuses").innerHTML += `
+     <div class="status">
+      <b>${escapeHTML(s.name)}</b>
+      ${media}
+     </div>
+    `;
+
+   });
+
+  },error => {
+   console.error(error);
+  });
+
+}
+
+// CREATE POST
+
+async function addPost() {
+
+ if (!currentUser) return;
+
+ const text = el("postText").value.trim();
+ const file = el("postFile").files[0];
+
+ if (!text && !file) {
+  alert("Write something or choose a photo!");
+  return;
+ }
+
+ try {
+
+  let url = "";
+  let type = "";
+
+  if (file) {
+   url = await uploadFile(file,"posts");
+   type = file.type;
+  }
+
+  await db.collection("Posts").add({
+
+   uid:currentUser.uid,
+   name:currentUser.displayName || currentUser.email,
+   text:text,
+   url:url,
+   type:type,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+
+  });
+
+  el("postText").value = "";
+  el("postFile").value = "";
+
+  alert("Post shared successfully!");
+
+ } catch(error) {
+  alert(error.message);
+ }
+
+}
+
+// NEWS FEED
+
+function loadPosts() {
+
+ stopPosts?.();
+
+ stopPosts = db.collection("Posts")
+  .orderBy("createdAt","desc")
+  .limit(50)
+  .onSnapshot(snapshot => {
+
+   el("feed").innerHTML = "";
+
+   snapshot.forEach(doc => {
+
+    const p = doc.data();
+
+    let media = "";
+
+    if (p.url && p.type.startsWith("video/")) {
+     media = `<video src="${escapeHTML(p.url)}" controls></video>`;
+    } else if (p.url) {
+     media = `<img src="${escapeHTML(p.url)}">`;
+    }
+
+    el("feed").innerHTML += `
+     <div class="post">
+      <b>${escapeHTML(p.name)}</b>
+      <p>${escapeHTML(p.text)}</p>
+      ${media}
+      <p class="small">DOMA SOCIAL</p>
+     </div>
+    `;
+
+   });
+
+  },error => {
+   console.error(error);
+   el("feed").textContent = "Unable to load posts.";
+  });
+
+}
+
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 </body>
 </html>
